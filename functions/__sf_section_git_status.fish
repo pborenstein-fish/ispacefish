@@ -36,14 +36,20 @@ function __sf_section_git_status -d "Display the current git status"
 	set -l index (command git status --porcelain 2>/dev/null -b)
 	set -l trimmed_index (string split \n $index | string sub --start 1 --length 2)
 
+	if test -z $index[2] && test (string match --entire '...' $index) \
+		 && not test (string match '*ahead*' $index) \
+		 && not test (string match '*behind*' $index)
+		set git_status even $git_status
+	end
+
 	for i in $trimmed_index
 		if test (string match '\?\?' $i)
 			set git_status untracked $git_status
 		end
-		if test (string match '*A*' $i)
+		if test (string match '*A*' $i) || test (string match 'M ' $i)
 			set git_status added $git_status
 		end
-		if test (string match '*M*' $i)
+		if test (string match ' M' $i) || test (string match 'MM' $i)
 			set git_status modified $git_status
 		end
 		if test (string match '*R*' $i)
@@ -87,7 +93,7 @@ function __sf_section_git_status -d "Display the current git status"
 		set git_status (string upper $git_status)
 		if contains $i in $git_status
 			set -l status_symbol SPACEFISH_GIT_STATUS_$i
-			set full_git_status "$$status_symbol$full_git_status"
+			set full_git_status "$full_git_status$$status_symbol"
 		end
 	end
 
@@ -96,5 +102,9 @@ function __sf_section_git_status -d "Display the current git status"
 		__sf_lib_section \
 			$SPACEFISH_GIT_STATUS_COLOR \
 			"$SPACEFISH_GIT_STATUS_PREFIX$full_git_status$SPACEFISH_GIT_STATUS_SUFFIX"
+	else
+		__sf_lib_section \
+		$SPACEFISH_GIT_STATUS_COLOR \
+	  "$SPACEFISH_GIT_STATUS_SUFFIX"
 	end
 end
