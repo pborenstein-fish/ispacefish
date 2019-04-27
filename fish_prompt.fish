@@ -26,6 +26,8 @@ function fish_prompt
 		echo
 	end
 
+	iterm2_prompt_mark
+
 	for i in $SPACEFISH_PROMPT_ORDER
 		eval __sf_section_$i
 	end
