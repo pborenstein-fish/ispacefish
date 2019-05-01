@@ -26,11 +26,8 @@ function fish_prompt
 		echo
 	end
 
-		#	Put the iterm2 dingus after the empty line
-		#	if we're running iterm
-	if type -q iterm2_prompt_mark
-		iterm2_prompt_mark
-	end
+	# Put the iterm2 dingus after the empty line if we're running iterm
+	type -q iterm2_prompt_mark && iterm2_prompt_mark
 
 	for i in $SPACEFISH_PROMPT_ORDER
 		eval __sf_section_$i
